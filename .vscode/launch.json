@@ -10,7 +10,8 @@
             "name": "Debug sandbox",
             "program": "${workspaceFolder}/builddir/sandbox/sandbox",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build sandbox"
         },
         {
             "type": "lldb",
@@ -18,7 +19,8 @@
             "name": "Debug tests",
             "program": "${workspaceFolder}/builddir/tests/tests",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build tests"
         }
     ]
 }
