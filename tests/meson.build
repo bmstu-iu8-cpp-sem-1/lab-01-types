@@ -1,8 +1,8 @@
 deps = [
   dependency('gtest', fallback: ['gtest', 'gtest_dep']),
-  dependency('gmock', fallback: ['gmock', 'gmock_dep']),
+  dependency('gmock', fallback: ['gtest', 'gmock_dep']),
   # gmock_main initializes both gtest and gmock
-  dependency('gmock_main', fallback: ['gmock_main', 'gmock_main_dep']),
+  dependency('gmock_main', fallback: ['gtest', 'gmock_main_dep']),
   dependency('lab'),
 ]
 inc_dirs = [
