@@ -4,7 +4,7 @@ project('lab-xx-template', 'cpp',
     'werror=true',
     'warning_level=3',
     'b_sanitize=address',
-    'cpp_std=gnu++20',
+    'cpp_std=c++20',
   ],
 )
 
