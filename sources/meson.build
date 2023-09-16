@@ -8,9 +8,6 @@ inc_dirs = [
 ]
 
 extraarg = []
-if get_option('coverage')
-  extraarg += 'b_coverage=true'
-endif
 
 lab_lib = static_library('lab',
   file_list,

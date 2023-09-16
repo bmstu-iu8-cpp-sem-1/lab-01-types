@@ -11,9 +11,6 @@ inc_dirs = [
 test_files = files('example.cpp')
 
 extraarg = []
-if get_option('coverage')
-  extraarg += 'b_coverage=true'
-endif
 
 tests = executable('tests',
   test_files,
