@@ -1,24 +1,30 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-pushd $(git rev-parse --show-toplevel)
+restore_dir=$(pwd)
+cd $(git rev-parse --show-toplevel)
 
 set -e
-
 export CTEST_OUTPUT_ON_FAILURE=true
 
-CMAKE_CONFIG_OPTS="-DHUNTER_CONFIGURATION_TYPES=Debug -DCMAKE_BUILD_TYPE=Debug"
-if [[ ! "$OSTYPE" == "darwin"* ]]; then
-  CMAKE_SANITIZER_OPTS="-DCMAKE_CXX_FLAGS='-fsanitize=address'"
-fi
-CMAKE_OPTS="$CMAKE_LINKER_OPTS $CMAKE_CONFIG_OPTS $CMAKE_SANITIZER_OPTS"
-cmake -H. -B_builds/sanitize-address-cxx17 $CMAKE_OPTS
-cmake --build _builds/sanitize-address-cxx17
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  source scripts/macos_leak_check.sh
-  macos_leak_check ./_builds/sanitize-address-cxx17/tests ./_builds/sanitize-address-cxx17/tests.memgraph
-  exit
-fi
-./_builds/sanitize-address-cxx17/tests
+case "$OSTYPE" in
+    darwin*)
+        echo "Warning! ASAN not supported on macOS! Will check for leaks, but results may differ"
+        SANITIZER_OPTS="";;
+    *) SANITIZER_OPTS="-Db_sanitize=address";;
+esac
+
+meson setup "$SANITIZER_OPTS" _builds
+meson compile -C _builds tests
+
+case "$OSTYPE" in
+    darwin*)
+        source scripts/macos_leak_check.sh
+        macos_leak_check ./_builds/tests/tests /tmp/tests.memgraph
+        open /tmp/tests.memgraph
+        ;;
+    *) ./_builds/tests/tests
+esac
+
 rm -r ./_builds
 
-popd
+cd "$restore_dir"
