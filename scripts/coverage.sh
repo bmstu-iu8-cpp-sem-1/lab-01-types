@@ -1,19 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-pushd $(git rev-parse --show-toplevel)
+restore_dir=$(pwd)
+cd $(git rev-parse --show-toplevel)
 
 set -e
 export CTEST_OUTPUT_ON_FAILURE=true
 
-CMAKE_CONFIG_OPTS="-DHUNTER_CONFIGURATION_TYPES=Debug -DCMAKE_BUILD_TYPE=Debug"
-CMAKE_OPTS="$CMAKE_LINKER_OPTS $CMAKE_CONFIG_OPTS $CMAKE_TOOLCHAIN_OPTS"
+meson setup _builds -Db_coverage=true
+ninja -C _builds test
+ninja -C _builds coverage
 
-cmake -H. -B_builds $CMAKE_OPTS -DBUILD_COVERAGE=ON
-cmake --build _builds
-cmake --build _builds --target test
-cmake --build _builds --target gcov
-gcovr -r  .
+[ -z "$SAVE_CACHE" ] && rm -r _builds || mv _builds _cache
 
-rm -r _builds
-
-popd
+cd "$restore_dir"

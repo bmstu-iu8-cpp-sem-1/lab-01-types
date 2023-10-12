@@ -1,16 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-pushd $(git rev-parse --show-toplevel)
+restore_dir=$(pwd)
+cd $(git rev-parse --show-toplevel)
 
 set -e
+export CTEST_OUTPUT_ON_FAILURE=true
 export GTEST_COLOR=1
-CMAKE_LINKER_OPTS="-DCMAKE_EXE_LINKER='-fuse-ld=gold'"
-CMAKE_CONFIG_OPTS="-DHUNTER_CONFIGURATION_TYPES=Debug -DCMAKE_BUILD_TYPE=Debug"
-CMAKE_OPTS="$CMAKE_LINKER_OPTS $CMAKE_CONFIG_OPTS"
-cmake -H. -B_builds $CMAKE_OPTS
-cmake --build _builds
-cmake --build _builds --target test -- ARGS="--verbose"
 
-rm -r _builds
+meson setup _builds
+meson compile -C _builds tests
+./_builds/tests/tests --verbose
 
-popd
+rm -r ./_builds
+
+cd "$restore_dir"
